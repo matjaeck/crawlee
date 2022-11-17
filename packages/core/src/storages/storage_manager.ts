@@ -18,7 +18,7 @@ export interface IStorage {
  * @ignore
  */
 export class StorageManager<T extends IStorage = IStorage> {
-    private static readonly storageManagers = new Map<Constructor, StorageManager>();
+    static readonly storageManagers = new Map<Constructor, StorageManager>();
     private readonly name: 'Dataset' | 'KeyValueStore' | 'RequestQueue';
     private readonly StorageConstructor: Constructor<T> & { name: string };
     private readonly cache = new Map<string, T>();

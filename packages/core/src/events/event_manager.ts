@@ -39,11 +39,17 @@ export abstract class EventManager {
         }
 
         const persistStateIntervalMillis = this.config.get('persistStateIntervalMillis')!;
-        this.intervals.persistState = betterSetInterval((intervalCallback: () => unknown) => {
-            this.emit(EventType.PERSIST_STATE, { isMigrating: false });
-            intervalCallback();
-        }, persistStateIntervalMillis);
+        this.emitPersistStateEvent = this.emitPersistStateEvent.bind(this)
+        this.intervals.persistState = betterSetInterval(this.emitPersistStateEvent.bind(this), persistStateIntervalMillis);
         this.initialized = true;
+    }
+
+    /**
+     * @internal
+     */
+    emitPersistStateEvent(intervalCallback: () => unknown) {
+        this.events.emit(EventType.PERSIST_STATE, { isMigrating: false });
+        intervalCallback();
     }
 
     /**
@@ -59,7 +65,7 @@ export abstract class EventManager {
         this.initialized = false;
 
         // Emit final PERSIST_STATE event
-        this.emit(EventType.PERSIST_STATE, { isMigrating: false });
+        this.events.emit(EventType.PERSIST_STATE, { isMigrating: false });
 
         // Wait for PERSIST_STATE to process
         await this.waitForAllListenersToComplete();

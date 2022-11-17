@@ -454,7 +454,7 @@ export class Configuration {
      * if we want to change them, we need to first reset the global state. Used mainly for testing purposes.
      */
     static resetGlobalState(): void {
-        delete this.globalConfig;
+        Configuration.globalConfig = undefined;
     }
 
     protected buildOptions(options: ConfigurationOptions) {
